@@ -3,13 +3,11 @@ const hbs = require("nodemailer-express-handlebars");
 const path = require("path");
 
 const sendEmail = async (
-  subject,
+  service,
+  message,
   send_to,
   sent_from,
   reply_to,
-  template,
-  name,
-  link
 ) => {
   // Create Email Transporter
   const transporter = nodemailer.createTransport({
@@ -44,12 +42,8 @@ const sendEmail = async (
     from: sent_from,
     to: send_to,
     replyTo: reply_to,
-    subject,
-    template,
-    context: {
-      name,
-      link,
-    },
+    service,
+    message,
   };
 
   // Send Email
