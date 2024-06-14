@@ -157,7 +157,7 @@ const updateProduct = asyncHandler(async (req, res) => {
   res.status(200).json(updatedProduct);
 });
 
-
+// Like Product
  const likeProduct = asyncHandler(async (req, res) => {
   const id = req.params.id;
   const userId = req.user.id;
@@ -178,6 +178,7 @@ try {
   }
 });
 
+// unLike Product
 const unLikeProduct =  asyncHandler(async (req, res) => {
   const id = req.params.id;
   const userId = req.user.id;
