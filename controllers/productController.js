@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const Product = require("../models/productModel");
+const User = require("../models/userModel");
 const { fileSizeFormatter } = require("../utils/fileUpload");
+const { error } = require("console");
 const cloudinary = require("cloudinary").v2;
 
 // Create Prouct
@@ -53,7 +55,7 @@ const createProduct = asyncHandler(async (req, res) => {
 // Get all Products
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().populate('likedBy');
     res.json(products);
   } catch (error) {
     console.error('Error retrieving products:', error);
@@ -155,10 +157,55 @@ const updateProduct = asyncHandler(async (req, res) => {
   res.status(200).json(updatedProduct);
 });
 
+
+ const likeProduct = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  const userId = req.user.id;
+   
+try {
+  const product = await Product.findById(id);
+  const user = await User.findById(userId);
+  if (!product.likedBy.includes(user.id)) {
+    product.likes++;
+    product.likedBy.push(user.id);
+    user.likedProducts.push(product.id);
+    await product.save();
+    await user.save();
+  }
+  res.json({ message: 'Product liked successfully' });
+  } catch(error) { 
+    res.status(500).json({ message: error.message });
+  }
+});
+
+const unLikeProduct =  asyncHandler(async (req, res) => {
+  const id = req.params.id;
+  const userId = req.user.id;
+   
+try {
+  const product = await Product.findById(id);
+  const user = await User.findById(userId);
+  if (product.likedBy.includes(user.id)) {
+    product.likes--;
+    product.likedBy.pull(user.id);
+    user.likedProducts.pull(product.id);
+    await product.save();
+    await user.save();
+  }
+  res.json({ message: 'Product unliked successfully' });
+  } catch(error) { 
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 module.exports = {
   createProduct,
   getProducts,
   getProduct,
   deleteProduct,
   updateProduct,
+  likeProduct,
+  unLikeProduct,
 };
+

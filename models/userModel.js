@@ -49,6 +49,7 @@ const userSchema = mongoose.Schema(
       required: true,
       default: [],
     },
+    likedProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
   },
   {
     timestamps: true,
